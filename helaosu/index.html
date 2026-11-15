@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>හෙළ ඔසු අරණ | දේශීය ආයුර්වේද ප්‍රතිකාර, ඔසු පැළෑටි සහ ස්වභාවික සුවතාව</title>
+  <meta name="description" content="ශ්‍රී ලාංකීය දේශීය වෛද්‍ය විද්‍යාව, ඔසු පැළෑටි හඳුනාගැනීම, ආයුර්වේද ප්‍රතිකාර සහ අත්බෙහෙත් පිළිබඳ විශ්වසනීය දැනුම් පද්ධතිය.">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+  <link rel="alternate" type="text/plain" title="LLM Discovery Index" href="../llms.txt">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Noto Sans Sinhala', 'Plus Jakarta Sans', sans-serif; background-color: #FAF7F2; color: #1C2826; }
+    .article-body h2 { font-size: 1.45rem; font-weight: 800; color: #1B4332; margin-top: 1.75rem; margin-bottom: 0.75rem; }
+    .article-body h3 { font-size: 1.2rem; font-weight: 700; color: #2D6A4F; margin-top: 1.25rem; margin-bottom: 0.5rem; }
+    .article-body p { line-height: 1.9; margin-bottom: 1.15rem; font-size: 1.05rem; color: #2D3A36; }
+    .article-body ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1.25rem; }
+    .article-body li { margin-bottom: 0.55rem; line-height: 1.8; }
+  </style>
+  <script id="dynamic-schema" type="application/ld+json">{}</script>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Top GEO Discovery Bar -->
+  <div class="bg-[#1B4332] text-emerald-100 text-xs py-2 px-4 text-center flex justify-center items-center gap-3 flex-wrap">
+    <span>🌿 ශ්‍රී ලාංකීය දේශීය ආයුර්වේද සහ ඔසු පැළෑටි විශ්වකෝෂය (AI &amp; GEO Verified)</span>
+    <a href="../admin/" class="bg-emerald-700/80 hover:bg-emerald-600 text-white px-2.5 py-0.5 rounded-full font-bold text-[11px]">📱 Open Controller App</a>
+  </div>
+
+  <!-- Header -->
+  <header class="bg-white/95 backdrop-blur sticky top-0 z-40 border-b border-stone-200 shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
+      <a href="./" class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-[#1B4332] text-white flex items-center justify-center text-xl shadow-md">🌿</div>
+        <div>
+          <h1 class="text-xl md:text-2xl font-extrabold text-[#1B4332] leading-none">හෙළ ඔසු අරණ</h1>
+          <p class="text-xs text-stone-500 mt-1">Ayurveda Treatments, Medicinal Plants &amp; Natural Wellness</p>
+        </div>
+      </a>
+
+      <div class="flex items-center gap-2 flex-wrap">
+        <input id="search_input" oninput="filterPosts()" placeholder="ඔසුවක් හෝ රෝගයක් සොයන්න (උදා: ඉරමුසු)..." class="bg-stone-100 border border-stone-300 rounded-xl px-3.5 py-2 text-xs w-56 focus:outline-none focus:border-[#1B4332]"/>
+        <a href="../pureplate/" class="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-xl hover:bg-emerald-100">🥗 English Food Blog →</a>
+      </div>
+    </div>
+
+    <!-- Category Bar -->
+    <div class="max-w-6xl mx-auto px-4 pb-3 flex gap-2 overflow-x-auto text-xs font-bold">
+      <button onclick="setCategory('all')" id="cat_all" class="px-3.5 py-1.5 rounded-full bg-[#1B4332] text-white">සියලුම ලිපි</button>
+      <button onclick="setCategory('ඔසු පැළෑටි')" class="px-3.5 py-1.5 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700">🌱 ඔසු පැළෑටි</button>
+      <button onclick="setCategory('ආයුර්වේද ප්‍රතිකාර')" class="px-3.5 py-1.5 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700">💆 ආයුර්වේද ප්‍රතිකාර</button>
+      <button onclick="setCategory('අත්බෙහෙත්')" class="px-3.5 py-1.5 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700">🥣 අත්බෙහෙත්</button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main id="main_view" class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full">
+    <div class="text-center py-16 text-stone-500">ලිපි පූරණය වෙමින් පවතී...</div>
+  </main>
+
+  <footer class="bg-[#1C2826] text-stone-400 text-xs py-10 px-4 mt-12">
+    <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-4">
+      <div>
+        <strong class="text-white text-sm">🌿 හෙළ ඔසු අරණ (Hela Osu Arana)</strong>
+        <p class="mt-1">Structured with Botanical Taxonomy &amp; JSON-LD Schema for Google, ChatGPT &amp; Gemini AI Search.</p>
+      </div>
+      <div class="flex gap-4">
+        <a href="../llms.txt" class="text-emerald-400 hover:underline">🤖 /llms.txt (AI Index)</a>
+        <a href="../sitemap.xml" class="text-emerald-400 hover:underline">🗺️ Sitemap.xml</a>
+        <a href="../admin/" class="text-emerald-400 hover:underline">⚙️ Admin Controller</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    var ALL_POSTS = [];
+    var ACTIVE_CAT = 'all';
+
+    async function initBlog() {
+      try {
+        var res = await fetch('../data/published_posts.json?t=' + Date.now());
+        var data = await res.json();
+        ALL_POSTS = data.filter(function(p) { return p.siteId === 'helaosu' || p.lang === 'Sinhala'; });
+      } catch (e) {
+        console.error(e);
+      }
+
+      var params = new URLSearchParams(window.location.search);
+      var postSlug = params.get('post');
+      if (postSlug) {
+        var found = ALL_POSTS.find(function(p) { return p.slug === postSlug || p.id === postSlug; });
+        if (found) {
+          renderSingleArticle(found);
+          return;
+        }
+      }
+      renderHomeGrid();
+    }
+
+    function setCategory(cat) {
+      ACTIVE_CAT = cat;
+      window.history.pushState({}, '', './');
+      renderHomeGrid();
+    }
+
+    function filterPosts() {
+      renderHomeGrid();
+    }
+
+    function renderHomeGrid() {
+      var q = (document.getElementById('search_input').value || '').toLowerCase();
+      var list = ALL_POSTS.filter(function(p) {
+        var matchCat = (ACTIVE_CAT === 'all' || p.category === ACTIVE_CAT);
+        var matchQ = !q || (p.title || '').toLowerCase().indexOf(q) !== -1 || JSON.stringify(p.botanical || {}).toLowerCase().indexOf(q) !== -1;
+        return matchCat && matchQ;
+      });
+
+      var html = '';
+      html += '<div class="mb-8 bg-gradient-to-r from-[#1B4332] to-[#2D6A4F] rounded-3xl p-6 md:p-10 text-white shadow-lg">';
+      html += '<span class="bg-amber-400/20 text-amber-200 border border-amber-300/30 text-xs font-bold px-3 py-1 rounded-full">AI-Verified Herbal Encyclopedia</span>';
+      html += '<h2 class="text-2xl md:text-4xl font-extrabold mt-3 leading-tight">හෙළ වෙදකම, ඔසු පැළෑටි සහ ස්වභාවික ප්‍රතිකාර</h2>';
+      html += '<p class="text-emerald-100 text-sm md:text-base mt-2 max-w-2xl">සෑම ශාකයකම උද්භිද විද්‍යාත්මක නාමයන් (Botanical Names), ත්‍රිදෝෂ ගුණ සහ නිවැරදි අත්බෙහෙත් සහිතව දිනපතා යාවත්කාලීන වන ලිපි එකතුව.</p>';
+      html += '</div>';
+
+      if (list.length === 0) {
+        html += '<div class="bg-white rounded-2xl p-10 text-center border border-stone-200">ලිපි කිසිවක් හමු නොවීය.</div>';
+      } else {
+        html += '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">';
+        for (var i = 0; i < list.length; i++) {
+          var p = list[i];
+          var slug = p.slug || p.id;
+          var botName = (p.botanical && p.botanical.botanical) ? p.botanical.botanical : 'Ayurveda';
+          html += '<article onclick="openPost(\'' + slug + '\')" class="cursor-pointer bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm hover:shadow-xl transition flex flex-col justify-between">';
+          html += '<div><div class="relative"><img src="' + p.imageUrl + '" alt="' + p.title + '" class="w-full h-52 object-cover"/><span class="absolute top-3 left-3 bg-[#1B4332]/90 text-white text-[11px] font-bold px-3 py-1 rounded-full">' + (p.category || 'ඔසු පැළෑටි') + '</span></div>';
+          html += '<div class="p-5"><div class="text-xs font-semibold text-emerald-800 italic mb-1">🔬 ' + botName + ' &bull; ' + (p.date || '') + '</div>';
+          html += '<h3 class="text-lg font-extrabold text-stone-900 hover:text-[#1B4332] leading-snug mb-2">' + p.title + '</h3>';
+          if (p.tldr && p.tldr[0]) {
+            html += '<p class="text-xs text-stone-600 line-clamp-3 leading-relaxed">' + p.tldr[0] + '</p>';
+          }
+          html += '</div></div>';
+          html += '<div class="px-5 py-3.5 border-t border-stone-100 flex justify-between items-center text-xs font-bold text-[#1B4332]"><span>සම්පූර්ණ ලිපිය කියවන්න →</span><span class="text-emerald-700">GEO ' + (p.geoScore || 97) + '%</span></div>';
+          html += '</article>';
+        }
+        html += '</div>';
+      }
+
+      document.getElementById('main_view').innerHTML = html;
+    }
+
+    function openPost(slug) {
+      var found = ALL_POSTS.find(function(p) { return p.slug === slug || p.id === slug; });
+      if (found) {
+        window.history.pushState({}, '', '?post=' + encodeURIComponent(slug));
+        renderSingleArticle(found);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function renderSingleArticle(p) {
+      document.title = p.title + ' | හෙළ ඔසු අරණ';
+
+      // Inject JSON-LD MedicalWebPage & FAQPage Schema for ChatGPT, Gemini & Google
+      var schemaObj = {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "MedicalWebPage",
+            "headline": p.title,
+            "image": p.imageUrl,
+            "datePublished": p.date,
+            "about": {
+              "@type": "Drug",
+              "name": (p.botanical && p.botanical.sinhala) || p.title,
+              "activeIngredient": (p.botanical && p.botanical.botanical) || ""
+            }
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": (p.faqs || []).map(function(f) {
+              return { "@type": "Question", "name": f.q, "acceptedAnswer": { "@type": "Answer", "text": f.a } };
+            })
+          }
+        ]
+      };
+      document.getElementById('dynamic-schema').textContent = JSON.stringify(schemaObj);
+
+      var html = '<div class="max-w-3xl mx-auto">';
+      html += '<button onclick="setCategory(\'all\')" class="mb-4 inline-flex items-center gap-2 text-xs font-bold text-[#1B4332] bg-stone-200/70 hover:bg-stone-300 px-3.5 py-2 rounded-xl">← මුල් පිටුවට යන්න</button>';
+      html += '<article class="bg-white rounded-3xl border border-stone-200 p-6 md:p-10 shadow-sm">';
+      html += '<div class="flex items-center gap-2 text-xs font-bold text-emerald-800 mb-3"><span>📂 ' + (p.category || 'ඔසු පැළෑටි') + '</span><span>&bull;</span><span>📅 ' + (p.date || '') + '</span><span>&bull;</span><span class="bg-emerald-100 text-emerald-900 px-2.5 py-0.5 rounded-full">AI Citation Ready</span></div>';
+      html += '<h1 class="text-2xl md:text-4xl font-extrabold text-stone-900 leading-tight mb-6">' + p.title + '</h1>';
+      html += '<img src="' + p.imageUrl + '" alt="' + p.title + '" class="w-full max-h-[440px] object-cover rounded-2xl mb-6"/>';
+
+      // AI Direct Answer Box (TL;DR)
+      if (p.tldr && p.tldr.length > 0) {
+        html += '<div class="bg-emerald-50 border-l-4 border-[#1B4332] p-5 rounded-2xl mb-6">';
+        html += '<strong class="text-[#1B4332] block mb-2 text-sm">✨ මූලික සාරාංශය (Quick Takeaways for Readers &amp; AI Search):</strong>';
+        html += '<ul class="list-disc pl-5 space-y-1.5 text-sm text-emerald-950">';
+        for (var i = 0; i < p.tldr.length; i++) html += '<li>' + p.tldr[i] + '</li>';
+        html += '</ul></div>';
+      }
+
+      // Botanical Identification Table
+      if (p.botanical && p.botanical.botanical) {
+        html += '<div class="mb-6 overflow-hidden rounded-2xl border border-stone-200 bg-[#FAF7F2]">';
+        html += '<div class="bg-[#1B4332] text-white text-xs font-bold px-4 py-2.5">🔬 උද්භිද විද්‍යාත්මක සහ ආයුර්වේද දත්ත පත්‍රිකාව (Botanical Profile)</div>';
+        html += '<table class="w-full text-sm"><tbody class="divide-y divide-stone-200">';
+        html += '<tr><td class="p-3 font-bold w-2/5">සිංහල නම</td><td class="p-3">' + (p.botanical.sinhala || '-') + '</td></tr>';
+        html += '<tr><td class="p-3 font-bold">උද්භිද විද්‍යාත්මක නම (Botanical)</td><td class="p-3 italic font-semibold text-emerald-900">' + (p.botanical.botanical || '-') + '</td></tr>';
+        html += '<tr><td class="p-3 font-bold">English / Sanskrit Name</td><td class="p-3">' + (p.botanical.english || '-') + ' / ' + (p.botanical.sanskrit || '-') + '</td></tr>';
+        html += '<tr><td class="p-3 font-bold">භාවිතා කරන කොටස්</td><td class="p-3">' + (p.botanical.parts || '-') + '</td></tr>';
+        html += '<tr><td class="p-3 font-bold">ත්‍රිදෝෂ බලපෑම (Dosha)</td><td class="p-3">' + (p.botanical.dosha || '-') + '</td></tr>';
+        html += '</tbody></table></div>';
+      }
+
+      html += '<div class="article-body">' + (p.bodyHtml || '') + '</div>';
+
+      // FAQs
+      if (p.faqs && p.faqs.length > 0) {
+        html += '<div class="mt-8 pt-6 border-t border-stone-200"><h2 class="text-xl font-extrabold text-[#1B4332] mb-4">නිතර අසන ප්‍රශ්න (FAQ)</h2><div class="space-y-3">';
+        for (var f = 0; f < p.faqs.length; f++) {
+          html += '<div class="bg-stone-50 border border-stone-200 rounded-2xl p-4"><strong class="text-sm text-stone-900 block">Q: ' + p.faqs[f].q + '</strong><p class="text-sm text-stone-700 mt-1.5">' + p.faqs[f].a + '</p></div>';
+        }
+        html += '</div></div>';
+      }
+
+      html += '</article></div>';
+      document.getElementById('main_view').innerHTML = html;
+    }
+
+    initBlog();
+  </script>
+</body>
+</html>

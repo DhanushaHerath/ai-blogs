@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PurePlate Wellness | Evidence-Based Food, Metabolic Health &amp; Longevity</title>
+  <meta name="description" content="Clinical nutrition guides, anti-inflammatory whole food recipes, and metabolic wellness optimized for human readers and AI search discovery.">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+  <link rel="alternate" type="text/plain" title="LLM Discovery Index" href="../llms.txt">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #0F172A; }
+    .article-body h2 { font-size: 1.45rem; font-weight: 800; color: #065F46; margin-top: 1.75rem; margin-bottom: 0.75rem; }
+    .article-body h3 { font-size: 1.2rem; font-weight: 700; color: #047857; margin-top: 1.25rem; margin-bottom: 0.5rem; }
+    .article-body p { line-height: 1.85; margin-bottom: 1.15rem; font-size: 1.05rem; color: #334155; }
+    .article-body ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1.25rem; }
+    .article-body li { margin-bottom: 0.55rem; line-height: 1.75; color: #334155; }
+  </style>
+  <script id="dynamic-schema" type="application/ld+json">{}</script>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Top GEO Discovery Bar -->
+  <div class="bg-emerald-950 text-emerald-100 text-xs py-2 px-4 text-center flex justify-center items-center gap-3 flex-wrap">
+    <span>🥗 Science-Backed Nutrition, Whole Foods &amp; Metabolic Longevity Hub (GEO Structured)</span>
+    <a href="../admin/" class="bg-emerald-700 hover:bg-emerald-600 text-white px-2.5 py-0.5 rounded-full font-bold text-[11px]">📱 Open Controller App</a>
+  </div>
+
+  <!-- Header -->
+  <header class="bg-white/95 backdrop-blur sticky top-0 z-40 border-b border-slate-200 shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
+      <a href="./" class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-emerald-700 text-white flex items-center justify-center text-xl shadow-md">🥗</div>
+        <div>
+          <h1 class="text-xl md:text-2xl font-extrabold text-slate-900 leading-none">PurePlate Wellness</h1>
+          <p class="text-xs text-slate-500 mt-1">Evidence-Based Nutrition, Bioactive Foods &amp; Healthy Recipes</p>
+        </div>
+      </a>
+
+      <div class="flex items-center gap-2 flex-wrap">
+        <input id="search_input" oninput="filterPosts()" placeholder="Search nutrients, foods, recipes..." class="bg-slate-100 border border-slate-300 rounded-xl px-3.5 py-2 text-xs w-56 focus:outline-none focus:border-emerald-700"/>
+        <a href="../helaosu/" class="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-xl hover:bg-emerald-100">🌿 සිංහල ආයුර්වේද අඩවිය →</a>
+      </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-4 pb-3 flex gap-2 overflow-x-auto text-xs font-bold">
+      <button onclick="setCategory('all')" class="px-3.5 py-1.5 rounded-full bg-emerald-800 text-white">All Guides</button>
+      <button onclick="setCategory('Nutrition Science')" class="px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700">🔬 Nutrition Science</button>
+      <button onclick="setCategory('Gut Health')" class="px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700">🦠 Gut Health</button>
+      <button onclick="setCategory('Healthy Recipes')" class="px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700">🥣 Healthy Recipes</button>
+      <button onclick="setCategory('Metabolic Wellness')" class="px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700">⚡ Metabolic Wellness</button>
+    </div>
+  </header>
+
+  <main id="main_view" class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full">
+    <div class="text-center py-16 text-slate-400">Loading articles...</div>
+  </main>
+
+  <footer class="bg-slate-950 text-slate-400 text-xs py-10 px-4 mt-12">
+    <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-4">
+      <div>
+        <strong class="text-white text-sm">🥗 PurePlate Wellness</strong>
+        <p class="mt-1">Structured with Clinical Nutrition Tables &amp; JSON-LD Schema for Google, ChatGPT &amp; Gemini AI Discovery.</p>
+      </div>
+      <div class="flex gap-4">
+        <a href="../llms.txt" class="text-emerald-400 hover:underline">🤖 /llms.txt (AI Index)</a>
+        <a href="../sitemap.xml" class="text-emerald-400 hover:underline">🗺️ Sitemap.xml</a>
+        <a href="../admin/" class="text-emerald-400 hover:underline">⚙️ Admin Controller</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    var ALL_POSTS = [];
+    var ACTIVE_CAT = 'all';
+
+    async function initBlog() {
+      try {
+        var res = await fetch('../data/published_posts.json?t=' + Date.now());
+        var data = await res.json();
+        ALL_POSTS = data.filter(function(p) { return p.siteId === 'pureplate' || p.lang === 'English'; });
+      } catch (e) {
+        console.error(e);
+      }
+
+      var params = new URLSearchParams(window.location.search);
+      var postSlug = params.get('post');
+      if (postSlug) {
+        var found = ALL_POSTS.find(function(p) { return p.slug === postSlug || p.id === postSlug; });
+        if (found) {
+          renderSingleArticle(found);
+          return;
+        }
+      }
+      renderHomeGrid();
+    }
+
+    function setCategory(cat) {
+      ACTIVE_CAT = cat;
+      window.history.pushState({}, '', './');
+      renderHomeGrid();
+    }
+
+    function filterPosts() {
+      renderHomeGrid();
+    }
+
+    function renderHomeGrid() {
+      var q = (document.getElementById('search_input').value || '').toLowerCase();
+      var list = ALL_POSTS.filter(function(p) {
+        var matchCat = (ACTIVE_CAT === 'all' || p.category === ACTIVE_CAT);
+        var matchQ = !q || (p.title || '').toLowerCase().indexOf(q) !== -1 || JSON.stringify(p.botanical || {}).toLowerCase().indexOf(q) !== -1;
+        return matchCat && matchQ;
+      });
+
+      var html = '';
+      html += '<div class="mb-8 bg-gradient-to-r from-emerald-900 to-teal-800 rounded-3xl p-6 md:p-10 text-white shadow-lg">';
+      html += '<span class="bg-emerald-400/20 text-emerald-200 border border-emerald-400/30 text-xs font-bold px-3 py-1 rounded-full">GEO-Optimized Nutrition Hub</span>';
+      html += '<h2 class="text-2xl md:text-4xl font-extrabold mt-3 leading-tight">Eat Smarter. Optimize Cellular Health.</h2>';
+      html += '<p class="text-emerald-100 text-sm md:text-base mt-2 max-w-2xl">Actionable nutrition guides, bioactive compound profiles, and anti-inflammatory whole food protocols.</p>';
+      html += '</div>';
+
+      if (list.length === 0) {
+        html += '<div class="bg-white rounded-2xl p-10 text-center border border-slate-200">No matching articles found.</div>';
+      } else {
+        html += '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">';
+        for (var i = 0; i < list.length; i++) {
+          var p = list[i];
+          var slug = p.slug || p.id;
+          var bio = (p.botanical && p.botanical.botanical) ? p.botanical.botanical : 'Nutrition';
+          html += '<article onclick="openPost(\'' + slug + '\')" class="cursor-pointer bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition flex flex-col justify-between">';
+          html += '<div><div class="relative"><img src="' + p.imageUrl + '" alt="' + p.title + '" class="w-full h-52 object-cover"/><span class="absolute top-3 left-3 bg-emerald-800/90 text-white text-[11px] font-bold px-3 py-1 rounded-full">' + (p.category || 'Wellness') + '</span></div>';
+          html += '<div class="p-5"><div class="text-xs font-semibold text-emerald-700 mb-1">🔬 ' + bio + ' &bull; ' + (p.date || '') + '</div>';
+          html += '<h3 class="text-lg font-extrabold text-slate-900 hover:text-emerald-700 leading-snug mb-2">' + p.title + '</h3>';
+          if (p.tldr && p.tldr[0]) {
+            html += '<p class="text-xs text-slate-600 line-clamp-3 leading-relaxed">' + p.tldr[0] + '</p>';
+          }
+          html += '</div></div>';
+          html += '<div class="px-5 py-3.5 border-t border-slate-100 flex justify-between items-center text-xs font-bold text-emerald-700"><span>Read Full Guide →</span><span>GEO ' + (p.geoScore || 96) + '%</span></div>';
+          html += '</article>';
+        }
+        html += '</div>';
+      }
+
+      document.getElementById('main_view').innerHTML = html;
+    }
+
+    function openPost(slug) {
+      var found = ALL_POSTS.find(function(p) { return p.slug === slug || p.id === slug; });
+      if (found) {
+        window.history.pushState({}, '', '?post=' + encodeURIComponent(slug));
+        renderSingleArticle(found);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function renderSingleArticle(p) {
+      document.title = p.title + ' | PurePlate Wellness';
+
+      var schemaObj = {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Article",
+            "headline": p.title,
+            "image": p.imageUrl,
+            "datePublished": p.date
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": (p.faqs || []).map(function(f) {
+              return { "@type": "Question", "name": f.q, "acceptedAnswer": { "@type": "Answer", "text": f.a } };
+            })
+          }
+        ]
+      };
+      document.getElementById('dynamic-schema').textContent = JSON.stringify(schemaObj);
+
+      var html = '<div class="max-w-3xl mx-auto">';
+      html += '<button onclick="setCategory(\'all\')" class="mb-4 inline-flex items-center gap-2 text-xs font-bold text-emerald-800 bg-slate-200 hover:bg-slate-300 px-3.5 py-2 rounded-xl">← Back to All Guides</button>';
+      html += '<article class="bg-white rounded-3xl border border-slate-200 p-6 md:p-10 shadow-sm">';
+      html += '<div class="flex items-center gap-2 text-xs font-bold text-emerald-700 mb-3"><span>📂 ' + (p.category || 'Wellness') + '</span><span>&bull;</span><span>📅 ' + (p.date || '') + '</span><span>&bull;</span><span class="bg-emerald-100 text-emerald-900 px-2.5 py-0.5 rounded-full">AI Citation Ready</span></div>';
+      html += '<h1 class="text-2xl md:text-4xl font-extrabold text-slate-900 leading-tight mb-6">' + p.title + '</h1>';
+      html += '<img src="' + p.imageUrl + '" alt="' + p.title + '" class="w-full max-h-[440px] object-cover rounded-2xl mb-6"/>';
+
+      if (p.tldr && p.tldr.length > 0) {
+        html += '<div class="bg-emerald-50 border-l-4 border-emerald-700 p-5 rounded-2xl mb-6">';
+        html += '<strong class="text-emerald-900 block mb-2 text-sm">✨ Key Clinical Takeaways (TL;DR Summary):</strong>';
+        html += '<ul class="list-disc pl-5 space-y-1.5 text-sm text-emerald-950">';
+        for (var i = 0; i < p.tldr.length; i++) html += '<li>' + p.tldr[i] + '</li>';
+        html += '</ul></div>';
+      }
+
+      if (p.botanical && (p.botanical.botanical || p.botanical.sinhala)) {
+        html += '<div class="mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">';
+        html += '<div class="bg-emerald-800 text-white text-xs font-bold px-4 py-2.5">🔬 Nutritional &amp; Bioactive Profile</div>';
+        html += '<table class="w-full text-sm"><tbody class="divide-y divide-slate-200">';
+        html += '<tr><td class="p-3 font-bold w-2/5">Key Bioactive Compound</td><td class="p-3">' + (p.botanical.sinhala || '-') + '</td></tr>';
+        html += '<tr><td class="p-3 font-bold">Scientific / Primary Source</td><td class="p-3 italic font-semibold text-emerald-900">' + (p.botanical.botanical || '-') + '</td></tr>';
+        html += '<tr><td class="p-3 font-bold">Optimal Dietary Form</td><td class="p-3">' + (p.botanical.english || '-') + '</td></tr>';
+        html += '<tr><td class="p-3 font-bold">Recommended Daily Intake</td><td class="p-3">' + (p.botanical.parts || '-') + '</td></tr>';
+        html += '<tr><td class="p-3 font-bold">Metabolic &amp; Physiological Impact</td><td class="p-3">' + (p.botanical.dosha || '-') + '</td></tr>';
+        html += '</tbody></table></div>';
+      }
+
+      html += '<div class="article-body">' + (p.bodyHtml || '') + '</div>';
+
+      if (p.faqs && p.faqs.length > 0) {
+        html += '<div class="mt-8 pt-6 border-t border-slate-200"><h2 class="text-xl font-extrabold text-emerald-900 mb-4">Frequently Asked Questions (FAQ)</h2><div class="space-y-3">';
+        for (var f = 0; f < p.faqs.length; f++) {
+          html += '<div class="bg-slate-50 border border-slate-200 rounded-2xl p-4"><strong class="text-sm text-slate-900 block">Q: ' + p.faqs[f].q + '</strong><p class="text-sm text-slate-700 mt-1.5">' + p.faqs[f].a + '</p></div>';
+        }
+        html += '</div></div>';
+      }
+
+      html += '</article></div>';
+      document.getElementById('main_view').innerHTML = html;
+    }
+
+    initBlog();
+  </script>
+</body>
+</html>

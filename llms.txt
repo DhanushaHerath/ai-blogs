@@ -1,0 +1,8 @@
+# Multi-Site AI Discovery Index (llms.txt)
+> Structured knowledge index for ChatGPT (OAI-SearchBot), Google Gemini (Google-Extended), and Perplexity AI.
+
+## හෙළ ඔසු අරණ (Sinhala) - දේශීය ආයුර්වේද ප්‍රතිකාර, ඔසු පැළෑටි සහ ස්වභාවික සුවතාව
+- [ඉරමුසු (Hemidesmus indicus): රුධිරය පිරිසිදු කර සම පැහැපත් කරන දිව්‍යමය හෙළ ඔසුව](/helaosu/?post=iramusu-hemidesmus-indicus-ayurveda-benefits) [Hemidesmus indicus]: ඉරමුසු (Hemidesmus indicus) යනු රුධිරය පිරිසිදු කිරීමට සහ සමේ රෝග සුව කිරීමට ආයුර්වේදයේ භාවිතා වන ප්‍රධානතම ශාකයකි.
+
+## PurePlate Wellness (English) - Evidence-Based Nutrition, Whole Foods & Longevity
+- [Ceylon Cinnamon (Cinnamomum verum): Clinical Guide to Blood Sugar & Metabolic Longevity](/pureplate/?post=ceylon-cinnamon-metabolic-insulin-sensitivity-guide) [Cinnamomum verum (True Ceylon)]: True Ceylon Cinnamon contains ultra-low coumarin (<0.004%) compared to Cassia cinnamon, making it safe for daily metabolic support.

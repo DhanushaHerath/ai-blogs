@@ -1,0 +1,15 @@
+{
+  "name": "AI Blog Controller Hub",
+  "short_name": "AI Controller",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#090D16",
+  "theme_color": "#10B981",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2917/2917995.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

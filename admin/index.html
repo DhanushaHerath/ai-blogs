@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Central AI Blog Controller | GitHub &amp; GEO Hub</title>
+  <link rel="manifest" href="./manifest.json">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Sinhala', sans-serif; background-color: #070B14; color: #F1F5F9; }
+    .glass { background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(14px); }
+    .preview-box h2 { font-size: 1.25rem; font-weight: 800; color: #065F46; margin-top: 1rem; margin-bottom: 0.5rem; }
+    .preview-box p { margin-bottom: 0.75rem; line-height: 1.75; color: #1E293B; }
+    .preview-box ul { list-style-type: disc; padding-left: 1.4rem; margin-bottom: 0.75rem; color: #1E293B; }
+  </style>
+</head>
+<body class="min-h-screen pb-28">
+
+  <!-- Header -->
+  <header class="glass border-b border-slate-800 sticky top-0 z-40 px-4 py-3">
+    <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-xl shadow-lg">🌿</div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base md:text-lg font-extrabold text-white">GitHub AI Blog Controller</h1>
+            <span id="sync_badge" class="text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">⚡ Ready</span>
+          </div>
+          <p class="text-[11px] text-slate-400">Multi-Site GitHub Pages CMS &bull; ChatGPT &amp; Gemini GEO Engine</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 flex-wrap">
+        <select id="site_filter" onchange="changeSiteFilter(this.value)" class="bg-slate-900 border border-slate-700 text-xs font-bold rounded-xl px-3 py-2 text-emerald-300">
+          <option value="all">🌐 All Blog Sites</option>
+        </select>
+        <a href="../helaosu/" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-emerald-300 text-xs font-bold px-3 py-2 rounded-xl">🌿 Sinhala Site ↗</a>
+        <a href="../pureplate/" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-sky-300 text-xs font-bold px-3 py-2 rounded-xl">🥗 English Site ↗</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-5xl mx-auto px-4 py-5">
+    <div id="kpi_strip" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6"></div>
+    <div id="tab_content"></div>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="fixed bottom-0 inset-x-0 glass border-t border-slate-800 z-40">
+    <div class="max-w-xl mx-auto grid grid-cols-4 gap-1 p-2">
+      <button onclick="switchTab('queue')" id="nav_queue" class="flex flex-col items-center py-2 rounded-xl text-xs font-bold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30">
+        <span>⏳ Queue</span>
+        <span class="text-[10px] opacity-80">Approve &amp; Edit</span>
+      </button>
+      <button onclick="switchTab('studio')" id="nav_studio" class="flex flex-col items-center py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white">
+        <span>✨ AI Studio</span>
+        <span class="text-[10px] opacity-80">Instant Create</span>
+      </button>
+      <button onclick="switchTab('analytics')" id="nav_analytics" class="flex flex-col items-center py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white">
+        <span>📊 Analytics</span>
+        <span class="text-[10px] opacity-80">Live Sites &amp; GEO</span>
+      </button>
+      <button onclick="switchTab('settings')" id="nav_settings" class="flex flex-col items-center py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white">
+        <span>⚙️ Controller</span>
+        <span class="text-[10px] opacity-80">GitHub &amp; Quotas</span>
+      </button>
+    </div>
+  </nav>
+
+  <script>
+    var CONFIG = { autoPilotEnabled: true, sites: [] };
+    var PENDING = [];
+    var PUBLISHED = [];
+    var ACTIVE_TAB = 'queue';
+    var SELECTED_SITE = 'all';
+
+    function getCreds() {
+      return {
+        ghRepo: localStorage.getItem('GH_REPO') || '',
+        ghToken: localStorage.getItem('GH_TOKEN') || '',
+        geminiKey: localStorage.getItem('GEMINI_KEY') || ''
+      };
+    }
+
+    async function initApp() {
+      try {
+        var [cRes, pendRes, pubRes] = await Promise.all([
+          fetch('../data/sites_config.json?t=' + Date.now()),
+          fetch('../data/pending_posts.json?t=' + Date.now()),
+          fetch('../data/published_posts.json?t=' + Date.now())
+        ]);
+        CONFIG = await cRes.json();
+        PENDING = await pendRes.json();
+        PUBLISHED = await pubRes.json();
+      } catch (e) {
+        console.warn('Using local fallback state:', e);
+      }
+      updateSiteDropdown();
+      renderAll();
+    }
+
+    function updateSiteDropdown() {
+      var sel = document.getElementById('site_filter');
+      var html = '<option value="all">🌐 All Sites (' + CONFIG.sites.length + ')</option>';
+      CONFIG.sites.forEach(function(s) {
+        var isSel = (SELECTED_SITE === s.id) ? 'selected' : '';
+        html += '<option value="' + s.id + '" ' + isSel + '>' + s.siteName + ' (' + s.lang + ')</option>';
+      });
+      sel.innerHTML = html;
+    }
+
+    function changeSiteFilter(val) {
+      SELECTED_SITE = val;
+      renderAll();
+    }
+
+    function switchTab(tab) {
+      ACTIVE_TAB = tab;
+      ['queue', 'studio', 'analytics', 'settings'].forEach(function(t) {
+        var btn = document.getElementById('nav_' + t);
+        if (t === tab) {
+          btn.className = 'flex flex-col items-center py-2 rounded-xl text-xs font-bold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30';
+        } else {
+          btn.className = 'flex flex-col items-center py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white';
+        }
+      });
+      renderAll();
+    }
+
+    // =========================================================================
+    // GITHUB REST API HELPER (Saves directly to your GitHub Repository!)
+    // =========================================================================
+    async function saveFileToGitHub(filePath, contentString, commitMsg) {
+      var creds = getCreds();
+      if (!creds.ghRepo || !creds.ghToken) {
+        return false; // Local preview mode
+      }
+      var apiUrl = 'https://api.github.com/repos/' + creds.ghRepo.trim() + '/contents/' + filePath;
+      var headers = {
+        'Authorization': 'Bearer ' + creds.ghToken.trim(),
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json'
+      };
+
+      // Get current SHA if file exists
+      var sha = null;
+      var getRes = await fetch(apiUrl, { headers: headers });
+      if (getRes.ok) {
+        var existing = await getRes.json();
+        sha = existing.sha;
+      }
+
+      // Encode UTF-8 string to Base64 safely (supports Sinhala Unicode)
+      var utf8Bytes = new TextEncoder().encode(contentString);
+      var binaryStr = '';
+      for (var i = 0; i < utf8Bytes.length; i++) {
+        binaryStr += String.fromCharCode(utf8Bytes[i]);
+      }
+      var base64Content = btoa(binaryStr);
+
+      var bodyObj = { message: commitMsg, content: base64Content };
+      if (sha) bodyObj.sha = sha;
+
+      var putRes = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: headers,
+        body: JSON.stringify(bodyObj)
+      });
+
+      if (!putRes.ok) {
+        var errTxt = await putRes.text();
+        throw new Error('GitHub API Error (' + putRes.status + '): ' + errTxt);
+      }
+      return true;
+    }
+
+    async function syncAllDataToGitHub(commitMsg) {
+      var badge = document.getElementById('sync_badge');
+      badge.innerText = '🔄 Syncing to GitHub...';
+      try {
+        var synced = await saveFileToGitHub('data/pending_posts.json', JSON.stringify(PENDING, null, 2), commitMsg);
+        if (synced) {
+          await saveFileToGitHub('data/published_posts.json', JSON.stringify(PUBLISHED, null, 2), commitMsg);
+          await saveFileToGitHub('data/sites_config.json', JSON.stringify(CONFIG, null, 2), commitMsg);
+          badge.innerText = '✅ Synced to GitHub Live';
+        } else {
+          badge.innerText = '💾 Saved in Browser (Connect GitHub in Settings for Live Push)';
+        }
+      } catch (e) {
+        badge.innerText = '⚠️ Sync Error';
+        alert(e.message);
+      }
+    }
+
+    function renderAll() {
+      var totalDaily = CONFIG.sites.reduce(function(acc, s) { return acc + Number(s.dailyQuota || 4); }, 0);
+      var kpi = '';
+      kpi += '<div class="bg-slate-900 border border-slate-800 rounded-2xl p-4"><div class="text-[11px] text-slate-400">Pending Approval</div><div class="text-2xl font-extrabold text-amber-400 mt-1">' + PENDING.length + '</div><div class="text-[10px] text-slate-500">In review queue</div></div>';
+      kpi += '<div class="bg-slate-900 border border-slate-800 rounded-2xl p-4"><div class="text-[11px] text-slate-400">Published Live</div><div class="text-2xl font-extrabold text-emerald-400 mt-1">' + PUBLISHED.length + '</div><div class="text-[10px] text-slate-500">Across ' + CONFIG.sites.length + ' sites</div></div>';
+      kpi += '<div class="bg-slate-900 border border-slate-800 rounded-2xl p-4"><div class="text-[11px] text-slate-400">Daily Auto Quota</div><div class="text-2xl font-extrabold text-sky-400 mt-1">' + totalDaily + '/day</div><div class="text-[10px] text-slate-500">GitHub Actions Cron</div></div>';
+      kpi += '<div class="bg-slate-900 border border-slate-800 rounded-2xl p-4"><div class="text-[11px] text-slate-400">GEO Discovery</div><div class="text-2xl font-extrabold text-purple-400 mt-1">98%</div><div class="text-[10px] text-slate-500">llms.txt + JSON-LD</div></div>';
+      document.getElementById('kpi_strip').innerHTML = kpi;
+
+      if (ACTIVE_TAB === 'queue') renderQueue();
+      else if (ACTIVE_TAB === 'studio') renderStudio();
+      else if (ACTIVE_TAB === 'analytics') renderAnalytics();
+      else if (ACTIVE_TAB === 'settings') renderSettings();
+    }
+
+    function renderQueue() {
+      var list = PENDING.map(function(p, i) { return { idx: i, post: p }; }).filter(function(item) {
+        return SELECTED_SITE === 'all' || item.post.siteId === SELECTED_SITE;
+      });
+
+      var html = '';
+      if (list.length === 0) {
+        html += '<div class="bg-slate-900 border border-slate-800 rounded-3xl p-12 text-center space-y-3">';
+        html += '<div class="text-4xl">✨</div><h3 class="text-lg font-extrabold text-white">අනුමත කිරීමට පෝස්ට් කිසිවක් නැත (Queue Empty)</h3>';
+        html += '<p class="text-xs text-slate-400">AI Studio ටැබ් එකෙන් දැන්ම අලුත් ලිපියක් ජනනය කරන්න.</p>';
+        html += '<button onclick="switchTab(\'studio\')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-5 py-2.5 rounded-xl">✨ Open AI Studio</button></div>';
+      } else {
+        list.forEach(function(item) {
+          var p = item.post;
+          var idx = item.idx;
+          html += '<div class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden mb-5 shadow-lg grid grid-cols-1 md:grid-cols-3">';
+          html += '<div class="relative"><img src="' + p.imageUrl + '" class="w-full h-56 md:h-full object-cover"/><span class="absolute top-3 left-3 bg-slate-950/85 text-emerald-300 text-[10px] font-bold px-3 py-1 rounded-full">' + p.siteName + '</span><span class="absolute top-3 right-3 bg-emerald-600 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full">GEO ' + (p.geoScore || 97) + '%</span></div>';
+          html += '<div class="p-5 md:col-span-2 space-y-3">';
+          html += '<div class="text-xs text-slate-400">📂 ' + (p.category || 'Wellness') + ' &bull; 📅 ' + (p.date || '') + '</div>';
+          html += '<h3 class="text-lg font-extrabold text-white leading-snug">' + p.title + '</h3>';
+
+          if (p.tldr && p.tldr.length) {
+            html += '<div class="bg-emerald-950/40 border border-emerald-800/50 rounded-xl p-3 text-xs text-emerald-200"><strong class="text-emerald-400 block mb-1">🤖 ChatGPT &amp; Gemini Direct Answer Takeaways:</strong><ul class="list-disc pl-4 space-y-1">';
+            p.tldr.forEach(function(t) { html += '<li>' + t + '</li>'; });
+            html += '</ul></div>';
+          }
+
+          html += '<details class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs"><summary class="cursor-pointer font-bold text-emerald-400">👁️ සම්පූර්ණ ලිපිය පරීක්ෂා කරන්න (Preview Full Article)</summary><div class="mt-3 p-4 bg-white rounded-xl preview-box">' + (p.bodyHtml || '') + '</div></details>';
+
+          html += '<details class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs"><summary class="cursor-pointer font-bold text-sky-400">✏️ ලිපිය හෝ පින්තූරය වෙනස් කරන්න (Edit Title / HTML / Image)</summary><div class="mt-3 space-y-2">';
+          html += '<input id="ed_title_' + idx + '" value="' + (p.title || '').replace(/"/g, '&quot;') + '" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white"/>';
+          html += '<div class="flex gap-2"><input id="ed_img_' + idx + '" value="' + (p.imagePrompt || '').replace(/"/g, '&quot;') + '" class="flex-1 bg-slate-900 border border-slate-700 rounded-lg p-2 text-white"/><button onclick="regenImg(' + idx + ')" class="bg-sky-600 text-white font-bold px-3 py-2 rounded-lg">🎨 New AI Image</button></div>';
+          html += '<textarea id="ed_body_' + idx + '" rows="4" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white font-mono text-[11px]">' + (p.bodyHtml || '') + '</textarea>';
+          html += '<button onclick="saveEdit(' + idx + ')" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2 rounded-lg">💾 Save Edits</button></div></details>';
+
+          html += '<div class="flex gap-2 pt-2">';
+          html += '<button onclick="approvePost(' + idx + ')" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-lg">✅ Approve &amp; Publish Live</button>';
+          html += '<button onclick="deletePending(' + idx + ')" class="bg-rose-950 hover:bg-rose-900 text-rose-300 border border-rose-800/50 font-bold px-4 py-2.5 rounded-xl text-xs">🗑️ Reject</button>';
+          html += '</div></div></div>';
+        });
+      }
+      document.getElementById('tab_content').innerHTML = html;
+    }
+
+    function renderStudio() {
+      var html = '<div class="grid grid-cols-1 md:grid-cols-2 gap-5">';
+      html += '<div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 space-y-4">';
+      html += '<span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300">LIVE GEMINI AUTO-MODEL STUDIO</span>';
+      html += '<h2 class="text-lg font-extrabold text-white">✨ Instant AI Article &amp; Image Generator</h2>';
+      html += '<div class="space-y-3 text-xs">';
+      html += '<div><label class="text-slate-400 block mb-1">1. Target Website</label><select id="st_site" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-bold">';
+      CONFIG.sites.forEach(function(s, i) { html += '<option value="' + i + '">' + s.siteName + ' (' + s.lang + ')</option>'; });
+      html += '</select></div>';
+      html += '<div><label class="text-slate-400 block mb-1">2. Topic / Herb / Nutrition Guide</label><input id="st_topic" placeholder="උදා: හාතාවාරිය ගුණ / Fermented Probiotic Foods" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"/></div>';
+      html += '<button onclick="generateLiveNow()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold py-3 rounded-xl shadow-lg">⚡ Generate Post to Approval Queue</button>';
+      html += '</div></div>';
+
+      html += '<div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 space-y-4">';
+      html += '<span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-sky-500/20 text-sky-300">DAILY 4-POST TOPIC QUEUE</span>';
+      html += '<h2 class="text-lg font-extrabold text-white">📋 Upcoming Auto-Pilot Topics</h2>';
+      CONFIG.sites.forEach(function(s, sIdx) {
+        html += '<div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-2">';
+        html += '<div class="flex justify-between text-xs font-bold"><span>' + s.siteName + '</span><span class="text-emerald-400">' + (s.suggestions || []).length + ' queued</span></div>';
+        html += '<div class="flex flex-wrap gap-1.5">';
+        (s.suggestions || []).forEach(function(t) {
+          html += '<span class="bg-slate-900 border border-slate-700 text-slate-300 text-[11px] px-2.5 py-1 rounded-lg">' + t + '</span>';
+        });
+        html += '</div>';
+        html += '<div class="flex gap-2 pt-1"><input id="new_sug_' + sIdx + '" placeholder="අලුත් මාතෘකාවක් එකතු කරන්න..." class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white"/><button onclick="addTopic(' + sIdx + ')" class="bg-emerald-700 text-white font-bold text-xs px-3 py-1.5 rounded-lg">+ Add</button></div>';
+        html += '</div>';
+      });
+      html += '</div></div>';
+      document.getElementById('tab_content').innerHTML = html;
+    }
+
+    function renderAnalytics() {
+      var html = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">';
+      CONFIG.sites.forEach(function(s) {
+        var sitePosts = PUBLISHED.filter(function(p) { return p.siteId === s.id; });
+        html += '<div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 space-y-3">';
+        html += '<div class="flex justify-between items-start"><div><span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300">' + s.lang + '</span><h3 class="text-lg font-extrabold text-white mt-1">' + s.siteName + '</h3><a href="../' + s.folder + '/" target="_blank" class="text-xs text-emerald-400 underline">Open Live Site (/' + s.folder + '/) ↗</a></div><div class="text-right"><div class="text-3xl font-extrabold text-white">' + sitePosts.length + '</div><div class="text-xs text-slate-400">Live Articles</div></div></div>';
+        html += '<div class="space-y-1.5 pt-2">';
+        sitePosts.forEach(function(p) {
+          html += '<a href="../' + s.folder + '/?post=' + encodeURIComponent(p.slug || p.id) + '" target="_blank" class="block bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl p-2.5 text-xs flex justify-between items-center"><span class="text-white font-semibold truncate pr-2">' + p.title + '</span><span class="text-emerald-400 shrink-0">View ↗</span></a>';
+        });
+        html += '</div></div>';
+      });
+      html += '</div>';
+      document.getElementById('tab_content').innerHTML = html;
+    }
+
+    function renderSettings() {
+      var creds = getCreds();
+      var html = '<div class="space-y-5">';
+
+      // GitHub & Gemini API Connection Card
+      html += '<div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 space-y-4">';
+      html += '<h3 class="text-base font-extrabold text-emerald-400">🔑 Connect GitHub Repository &amp; Gemini API Key</h3>';
+      html += '<p class="text-xs text-slate-400">ඔබගේ ජංගම දුරකථනයෙන් Approve කරන පෝස්ට් කෙලින්ම GitHub වෙබ් අඩවියේ Live පළ වීමට පහත විස්තර ලබා දී Save ඔබන්න (මෙය සුරැකෙන්නේ ඔබගේ දුරකථනයේ පමණි):</p>';
+      html += '<div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">';
+      html += '<div><label class="text-slate-400 block mb-1">1. GitHub Repo (username/repo-name)</label><input id="cfg_repo" value="' + creds.ghRepo + '" placeholder="e.g. dhanusha/ai-blogs" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"/></div>';
+      html += '<div><label class="text-slate-400 block mb-1">2. GitHub Personal Access Token (classic/repo)</label><input id="cfg_token" type="password" value="' + creds.ghToken + '" placeholder="ghp_xxxxxxxxxxxx" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"/></div>';
+      html += '<div><label class="text-slate-400 block mb-1">3. Gemini API Key (aistudio.google.com)</label><input id="cfg_gemini" type="password" value="' + creds.geminiKey + '" placeholder="AIzaSyxxxxxxxxxx" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"/></div>';
+      html += '</div>';
+      html += '<div class="flex flex-wrap gap-2">';
+      html += '<button onclick="saveCredentials()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl">💾 Save Connection Keys</button>';
+      html += '<button onclick="installWorkflowViaApi()" class="bg-sky-600/20 border border-sky-500/40 hover:bg-sky-600/30 text-sky-300 font-bold text-xs px-4 py-2.5 rounded-xl">🔧 1-Click Install Daily GitHub Action Workflow</button>';
+      html += '</div></div>';
+
+      // Per-Site Daily Quota Controls
+      CONFIG.sites.forEach(function(s, idx) {
+        html += '<div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 space-y-3 text-xs">';
+        html += '<div class="flex justify-between items-center"><h4 class="text-sm font-extrabold text-white">⚙️ ' + s.siteName + ' (' + s.lang + ')</h4><span id="q_lbl_' + idx + '" class="text-emerald-400 font-extrabold text-sm">' + s.dailyQuota + ' Posts / Day</span></div>';
+        html += '<input type="range" min="1" max="10" value="' + s.dailyQuota + '" oninput="updateQuota(' + idx + ', this.value)" class="w-full accent-emerald-500 cursor-pointer"/>';
+        html += '</div>';
+      });
+
+      // Add New Site Card
+      html += '<div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 space-y-3 text-xs">';
+      html += '<h4 class="text-sm font-extrabold text-emerald-400">➕ ඉදිරියට තවත් වෙබ් අඩවියක් එකතු කරන්න (Add New Blog Site)</h4>';
+      html += '<div class="grid grid-cols-1 md:grid-cols-3 gap-2">';
+      html += '<input id="ns_name" placeholder="Site Name (e.g. Kids Nutrition)" class="bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"/>';
+      html += '<input id="ns_id" placeholder="Folder ID (e.g. kidsblog)" class="bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"/>';
+      html += '<select id="ns_lang" class="bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"><option value="Sinhala">Sinhala</option><option value="English">English</option></select>';
+      html += '</div>';
+      html += '<button onclick="addNewSite()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold px-4 py-2.5 rounded-xl">+ Add Site to Multi-Site Hub</button>';
+      html += '</div></div>';
+
+      document.getElementById('tab_content').innerHTML = html;
+    }
+
+    function saveCredentials() {
+      localStorage.setItem('GH_REPO', document.getElementById('cfg_repo').value.trim());
+      localStorage.setItem('GH_TOKEN', document.getElementById('cfg_token').value.trim());
+      localStorage.setItem('GEMINI_KEY', document.getElementById('cfg_gemini').value.trim());
+      alert('✅ GitHub Repo, Token & Gemini API Key Saved!');
+      renderAll();
+    }
+
+    async function updateQuota(idx, val) {
+      CONFIG.sites[idx].dailyQuota = Number(val);
+      document.getElementById('q_lbl_' + idx).innerText = val + ' Posts / Day';
+      await syncAllDataToGitHub('Update daily post quota');
+    }
+
+    async function addTopic(sIdx) {
+      var inp = document.getElementById('new_sug_' + sIdx);
+      if (!inp.value.trim()) return;
+      CONFIG.sites[sIdx].suggestions.push(inp.value.trim());
+      inp.value = '';
+      renderAll();
+      await syncAllDataToGitHub('Add topic suggestion');
+    }
+
+    async function addNewSite() {
+      var name = document.getElementById('ns_name').value.trim();
+      var id = document.getElementById('ns_id').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+      var lang = document.getElementById('ns_lang').value;
+      if (!name || !id) return alert('Site Name සහ Folder ID ඇතුළත් කරන්න.');
+      CONFIG.sites.push({
+        id: id, siteName: name, tagline: name, lang: lang, folder: id, dailyQuota: 4,
+        categories: ['Wellness'], suggestions: ['Daily Wellness Guide']
+      });
+      updateSiteDropdown();
+      renderAll();
+      await syncAllDataToGitHub('Add new blog site: ' + name);
+    }
+
+    async function approvePost(idx) {
+      var p = PENDING.splice(idx, 1)[0];
+      p.date = new Date().toISOString().split('T')[0];
+      PUBLISHED.unshift(p);
+      renderAll();
+      await syncAllDataToGitHub('✅ Approve & Publish: ' + p.title);
+      alert('🚀 ලිපිය සාර්ථකව අනුමත වී වෙබ් අඩවියට එක් කරන ලදී!');
+    }
+
+    async function deletePending(idx) {
+      if (!confirm('මෙම පෝස්ට් එක ඉවත් කරන්නද?')) return;
+      PENDING.splice(idx, 1);
+      renderAll();
+      await syncAllDataToGitHub('Remove rejected draft');
+    }
+
+    async function saveEdit(idx) {
+      PENDING[idx].title = document.getElementById('ed_title_' + idx).value;
+      PENDING[idx].bodyHtml = document.getElementById('ed_body_' + idx).value;
+      renderAll();
+      await syncAllDataToGitHub('Edit pending post');
+    }
+
+    async function regenImg(idx) {
+      var prompt = document.getElementById('ed_img_' + idx).value;
+      PENDING[idx].imagePrompt = prompt;
+      PENDING[idx].imageUrl = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt + ', realistic editorial photography') + '?width=1000&height=560&nologo=true&seed=' + Math.floor(Math.random()*99999);
+      renderAll();
+      await syncAllDataToGitHub('Regenerate AI image');
+    }
+
+    // Smart Auto-Model Gemini Caller in Browser
+    async function callGeminiBrowser(apiKey, prompt) {
+      var models = ['gemini-flash-latest', 'gemini-2.0-flash', 'gemini-2.5-pro'];
+      try {
+        var mRes = await fetch('https://generativelanguage.googleapis.com/v1beta/models?key=' + apiKey);
+        if (mRes.ok) {
+          var mData = await mRes.json();
+          var found = [];
+          (mData.models || []).forEach(function(m) {
+            var n = (m.name || '').replace('models/', '');
+            if ((m.supportedGenerationMethods || []).indexOf('generateContent') !== -1 && n.indexOf('gemini') !== -1 && !/tts|image|embedding|vision|audio/.test(n)) {
+              if (n.indexOf('flash') !== -1) found.unshift(n);
+              else found.push(n);
+            }
+          });
+          if (found.length) models = found;
+        }
+      } catch (e) {}
+
+      for (var i = 0; i < models.length; i++) {
+        var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + models[i] + ':generateContent?key=' + apiKey, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { responseMimeType: 'application/json' }
+          })
+        });
+        if (res.ok) {
+          var data = await res.json();
+          var txt = data.candidates[0].content.parts[0].text.replace(/^```json\s*/i, '').replace(/\s*```$/, '').trim();
+          return JSON.parse(txt);
+        }
+      }
+      throw new Error('Gemini API call failed. Check your API Key in Controller Settings.');
+    }
+
+    async function generateLiveNow() {
+      var creds = getCreds();
+      if (!creds.geminiKey) {
+        alert('කරුණාකර පළමුව Controller (⚙️) ටැබ් එකට ගොස් ඔබගේ Gemini API Key එක ඇතුළත් කර Save කරන්න!');
+        switchTab('settings');
+        return;
+      }
+      var siteIdx = Number(document.getElementById('st_site').value);
+      var site = CONFIG.sites[siteIdx];
+      var topic = document.getElementById('st_topic').value.trim();
+      if (!topic) return alert('මාතෘකාවක් ඇතුළත් කරන්න!');
+
+      document.getElementById('tab_content').innerHTML = '<div class="bg-slate-900 border border-slate-800 rounded-3xl p-12 text-center space-y-3"><div class="text-4xl animate-bounce">🌿</div><div class="text-sm font-bold text-emerald-400">Gemini AI මගින් ලිපිය සහ AI පින්තූරය සකසමින් පවතී... (තත්පර 15)</div></div>';
+
+      try {
+        var prompt = site.lang === 'Sinhala'
+          ? "Write a comprehensive Sinhala Ayurveda blog post about '" + topic + "'. Optimize for Google SEO, ChatGPT, and Gemini AI Search. Return ONLY valid JSON with keys: slug, title (Sinhala title with Botanical name), category (ඔසු පැළෑටි or ආයුර්වේද ප්‍රතිකාර), geoScore (96), botanical (object with sinhala, botanical, english, sanskrit, parts, dosha), tldr (array of 3 Sinhala strings), bodyHtml (HTML string with h2, p, ul, li), faqs (array of 2 objects with q and a in Sinhala), imagePrompt (English prompt for realistic herb photo)."
+          : "Write a comprehensive English Food & Wellness blog post about '" + topic + "'. Optimize for Google SEO, ChatGPT, and Gemini AI Search. Return ONLY valid JSON with keys: slug, title, category (Nutrition Science or Gut Health), geoScore (96), botanical (object with sinhala, botanical, english, sanskrit, parts, dosha filled with nutritional profile), tldr (array of 3 strings), bodyHtml (HTML string with h2, p, ul, li), faqs (array of 2 objects with q and a), imagePrompt (English prompt for healthy food photography).";
+
+        var gen = await callGeminiBrowser(creds.geminiKey, prompt);
+        var imgUrl = 'https://image.pollinations.ai/prompt/' + encodeURIComponent((gen.imagePrompt || topic) + ', editorial photography') + '?width=1000&height=560&nologo=true&seed=' + Math.floor(Math.random()*99999);
+
+        PENDING.unshift({
+          id: 'pending_' + Date.now(),
+          siteId: site.id,
+          siteName: site.siteName,
+          lang: site.lang,
+          slug: gen.slug || ('post-' + Date.now()),
+          title: gen.title || topic,
+          category: gen.category || 'Wellness',
+          date: new Date().toISOString().split('T')[0],
+          geoScore: gen.geoScore || 97,
+          imageUrl: imgUrl,
+          imagePrompt: gen.imagePrompt || topic,
+          tldr: gen.tldr || [],
+          botanical: gen.botanical || {},
+          bodyHtml: gen.bodyHtml || '',
+          faqs: gen.faqs || []
+        });
+
+        await syncAllDataToGitHub('Generate new AI post: ' + (gen.title || topic));
+        switchTab('queue');
+      } catch (e) {
+        alert(e.message);
+        renderStudio();
+      }
+    }
+
+    async function installWorkflowViaApi() {
+      var creds = getCreds();
+      if (!creds.ghRepo || !creds.ghToken) return alert('කරුණාකර පළමුව GitHub Repo සහ Token ඇතුළත් කර Save ඔබන්න.');
+      var wf = "name: Daily Multi-Site AI Blog Generator\non:\n  schedule:\n    - cron: '30 0 * * *'\n  workflow_dispatch:\npermissions:\n  contents: write\njobs:\n  generate-posts:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-python@v5\n        with:\n          python-version: '3.11'\n      - name: Run AI Generator\n        env:\n          GEMINI_API_KEY: $" + "{{ secrets.GEMINI_API_KEY }}\n        run: python scripts/generate_daily_posts.py\n      - name: Commit & Push\n        run: |\n          git config --global user.name 'AI Auto-Pilot'\n          git config --global user.email 'autopilot@users.noreply.github.com'\n          git add data/ llms.txt sitemap.xml\n          git diff --quiet && git diff --staged --quiet || (git commit -m 'Auto-generate daily AI posts' && git push)\n";
+      try {
+        await saveFileToGitHub('.github/workflows/daily_ai_posts.yml', wf, 'Install daily AI blog generator workflow');
+        alert('✅ GitHub Action Workflow (.github/workflows/daily_ai_posts.yml) සාර්ථකව ස්ථාපනය කරන ලදී!');
+      } catch (e) {
+        alert(e.message);
+      }
+    }
+
+    initApp();
+  </script>
+</body>
+</html>

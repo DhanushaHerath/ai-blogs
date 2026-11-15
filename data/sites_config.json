@@ -1,0 +1,56 @@
+{
+  "autoPilotEnabled": true,
+  "scheduleCron": "30 0 * * *",
+  "sites": [
+    {
+      "id": "helaosu",
+      "siteName": "හෙළ ඔසු අරණ",
+      "tagline": "දේශීය ආයුර්වේද ප්‍රතිකාර, ඔසු පැළෑටි සහ ස්වභාවික සුවතාව",
+      "lang": "Sinhala",
+      "folder": "helaosu",
+      "customDomain": "helaosu.lk",
+      "dailyQuota": 4,
+      "categories": [
+        "ඔසු පැළෑටි",
+        "ආයුර්වේද ප්‍රතිකාර",
+        "අත්බෙහෙත්",
+        "කොළ කැඳ සහ ආහාර"
+      ],
+      "suggestions": [
+        "ඉරමුසු (Hemidesmus indicus) ගුණ සහ භාවිත",
+        "කොහොඹ (Azadirachta indica) සමේ රෝග සඳහා ප්‍රතිකාර",
+        "හාතාවාරිය (Asparagus racemosus) කාන්තා සුවතාවට",
+        "කටුවැල්බටු (Solanum virginianum) සෙම් රෝග අත්බෙහෙත්",
+        "ගොටුකොළ (Centella asiatica) මතක ශක්තිය සහ උදෑසන කොළ කැඳ",
+        "වෙනිවැල්ගැට (Coscinium fenestratum) ප්‍රතිශක්තිකරණ ගුණ",
+        "රසකිඳ (Tinospora cordifolia) රුධිරය පිරිසිදු කිරීමේ ප්‍රතිකාර",
+        "පාවට්ටා (Justicia adhatoda) කැස්ස සහ ස්වසන ප්‍රතිකාර"
+      ]
+    },
+    {
+      "id": "pureplate",
+      "siteName": "PurePlate Wellness",
+      "tagline": "Evidence-Based Nutrition, Whole Foods & Longevity",
+      "lang": "English",
+      "folder": "pureplate",
+      "customDomain": "pureplatewellness.com",
+      "dailyQuota": 4,
+      "categories": [
+        "Nutrition Science",
+        "Gut Health",
+        "Healthy Recipes",
+        "Metabolic Wellness"
+      ],
+      "suggestions": [
+        "High-Protein Anti-Inflammatory Breakfast Bowls",
+        "Fermented Foods and the Gut-Brain Microbiome Axis",
+        "Ceylon Cinnamon vs Cassia: Blood Sugar & Metabolic Benefits",
+        "Moringa Oleifera Leaf Powder: Complete Amino Acid & Micronutrient Guide",
+        "Omega-3 Rich Plant Foods for Cardiovascular Longevity",
+        "Turmeric & Black Pepper (Piperine): Bioavailability Science",
+        "Polyphenol-Rich Berries and Cellular Autophagy",
+        "Magnesium-Rich Evening Foods for Deep Sleep Architecture"
+      ]
+    }
+  ]
+}
